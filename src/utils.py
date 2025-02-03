@@ -1,6 +1,5 @@
 import os 
 
-
 class DataCleaner:
     def remove_json(self):
         """ This function is used to clean the json file that was inside the dataset

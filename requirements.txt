@@ -2,4 +2,8 @@ pandas
 numpy
 seaborn
 matplotlib
-#-e .
+opencv-python
+scikit-learn
+keras
+
+-e .
