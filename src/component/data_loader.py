@@ -19,3 +19,6 @@ class DataLoader:
                     if image_name.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.tiff')):
                         self.images.append(image_path)
         return self.images
+    
+
+
