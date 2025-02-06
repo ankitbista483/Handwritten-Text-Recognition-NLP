@@ -7,7 +7,7 @@ class DatasetProcessor:
         self.json_files = []
 
     # Function to clean and normalize the label
-    def clean_label(self, label, keep_numbers=False, keep_punctuation=False):
+    def clean_label(self, label, keep_numbers=True, keep_punctuation=False):
         label = label.lower()  # Normalize to lowercase (can adjust based on model requirements)
         if not keep_numbers:
             label = re.sub(r'[0-9]', '', label)  # Remove numbers if not required
