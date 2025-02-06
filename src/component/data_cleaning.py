@@ -42,3 +42,6 @@ class DataCleaner:
             results = executor.map(cls.process_single_image, images)
         
         return [img for img in results if img is not None]
+
+
+

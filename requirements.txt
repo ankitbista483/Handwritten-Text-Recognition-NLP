@@ -4,6 +4,14 @@ seaborn
 matplotlib
 opencv-python
 scikit-learn
-keras
+torch
+torchvision
+torchaudio
+tqdm
+pillow
+torchmetrics
+lightning
+python-Levenshtein
+
 
 -e .
