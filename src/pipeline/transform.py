@@ -3,7 +3,7 @@ from src.component.data_augmentation import DataTransformer
 
 
 
-class TorchTransform:
+class TensorTransform:
     def __init__(self):
         self.load_to_tensor = transforms.ToTensor()
         self.load_to_PIL = transforms.ToPILImage()
