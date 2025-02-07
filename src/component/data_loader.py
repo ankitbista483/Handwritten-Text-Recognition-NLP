@@ -5,7 +5,7 @@ class DataLoader:
     def __init__(self):
         self.images = []
 
-    def data_open(self):
+    def image_loader(self):
         current_directory = 'dataset'  # Dataset directory
         files = os.listdir(current_directory)
         for file in files:
@@ -20,5 +20,7 @@ class DataLoader:
                         self.images.append(image_path)
         return self.images
     
+
+  
 
 

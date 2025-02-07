@@ -50,4 +50,4 @@ class Model(nn.Module):
         return x
 
 
-print(len('dataset/test'))
+

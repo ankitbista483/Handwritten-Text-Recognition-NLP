@@ -7,10 +7,8 @@ class DatasetProcessor:
         self.json_files = []
 
     # Function to clean and normalize the label
-    def clean_label(self, label, keep_numbers=True, keep_punctuation=False):
+    def clean_label(self, label,  keep_punctuation=False):
         label = label.lower()  # Normalize to lowercase (can adjust based on model requirements)
-        if not keep_numbers:
-            label = re.sub(r'[0-9]', '', label)  # Remove numbers if not required
         if not keep_punctuation:
             label = re.sub(r'[^\w\s]', '', label)  # Remove punctuation if not needed
         label = " ".join(label.split())  # Normalize whitespace by removing extra spaces
@@ -21,7 +19,7 @@ class DatasetProcessor:
         return processed_label.strip()  # Remove leading and trailing spaces
 
     # Function to preprocess the JSON data (cleaning labels, etc.)
-    def preprocess_json_data(self, json_data, keep_numbers=False, keep_punctuation=False):
+    def preprocess_json_data(self, json_data, keep_punctuation=False):
         processed_data = []
         for entry in json_data:
             # Check if 'processed_label' exists in the entry, and clean it if it does
@@ -31,7 +29,7 @@ class DatasetProcessor:
                 cleaned_label = ''  # Handle case when 'processed_label' is missing
 
             # Clean the actual text label using your cleaning function
-            text_label = self.clean_label(entry['text'], keep_numbers, keep_punctuation)
+            text_label = self.clean_label(entry['text'], keep_punctuation)
 
             # Replace the 'processed_label' with the cleaned text label
             entry['processed_label'] = cleaned_label
@@ -43,7 +41,7 @@ class DatasetProcessor:
 
         return processed_data
 
-    # Function to open and process all JSON files in the dataset directories
+    #Function to open and process all JSON files in the dataset directories
     def data_open(self):
         current_directory = 'dataset'  # Dataset directory
         files = os.listdir(current_directory)

@@ -17,18 +17,12 @@ class DataCleaner:
         
         # Convert to Grayscale
         gray_img = cv.cvtColor(resized_img, cv.COLOR_BGR2GRAY)
-        
-        # Apply Thresholding
-        #_, thresholded_img = cv.threshold(gray_img, 128, 255, cv.THRESH_BINARY)
 
         # Apply Gaussian Blur to reduce noise
         blurred_img = cv.GaussianBlur(gray_img, (5, 5), 0)
         
-        # Histogram Equalization
-        equalized_img = cv.equalizeHist(blurred_img)
-        
         # Normalize (Scale pixel values to [0,1])
-        normalized_img = equalized_img.astype('float32') / 255.0
+        normalized_img = blurred_img.astype('float32') / 255.0
         
         return normalized_img
 
@@ -36,7 +30,7 @@ class DataCleaner:
     def preprocess_images_parallel(cls):
         """Preprocess images in parallel."""
         loader = DataLoader()
-        images = loader.load_images()
+        images = loader.image_loader()
         
         with ThreadPoolExecutor() as executor:
             results = executor.map(cls.process_single_image, images)
