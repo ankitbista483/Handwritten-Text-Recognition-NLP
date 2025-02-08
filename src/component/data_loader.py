@@ -6,7 +6,7 @@ class DataLoader:
         self.images = []
 
     def image_loader(self):
-        current_directory = 'dataset'  # Dataset directory
+        current_directory = 'dataset'  
         files = os.listdir(current_directory)
         for file in files:
             if file == '.DS_Store':

@@ -76,15 +76,7 @@ class DatasetProcessor:
         return processed_files  
 
 
-    def load_labels(self):
-        json_paths = self.process_json_files() 
 
-        labels_dict = {} 
-        for json_path in json_paths:
-            with open(json_path, "r") as f:
-                labels_dict[json_path] = json.load(f)  
-        return labels_dict
-       
 
 
 

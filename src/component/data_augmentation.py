@@ -25,7 +25,7 @@ class DataTransformer:
 
     @classmethod
     def transform_images(cls):
-        """Apply transformations to preprocessed images."""
+        
         preprocessed_images = DataCleaner.preprocess_images_parallel()
         transformed_images = []
 
