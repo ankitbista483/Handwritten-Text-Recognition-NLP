@@ -46,25 +46,19 @@ class DatasetProcessor:
         self.data_open()
         processed_files = []
         for json_file in self.json_files:
-            try:
-                with open(json_file, 'r') as f:
-                    file_content = f.read().strip()
-                    if not file_content:
-                        print(f"Skipping empty file: {json_file}")
-                        continue
-                    data = json.loads(file_content)
-           
-                cleaned_data = self.preprocess_json_data(data, keep_punctuation)
+            
+            with open(json_file, 'r') as f:
+                file_content = f.read().strip()
+                if not file_content:
+                    #print(f"Skipping empty file: {json_file}")
+                    continue
+                data = json.loads(file_content)
+        
+            cleaned_data = self.preprocess_json_data(data, keep_punctuation)
 
-                with open(json_file, 'w') as f:
-                    json.dump(cleaned_data, f, indent=4)
-                processed_files.append(json_file)
-
-            except json.JSONDecodeError:
-                print(f"Error processing {json_file}: Invalid JSON format.")
-            except Exception as e:
-                print(f"Error processing {json_file}: {e}")
-
+            with open(json_file, 'w') as f:
+                json.dump(cleaned_data, f, indent=4)
+            processed_files.append(json_file)
         return processed_files
     
    
