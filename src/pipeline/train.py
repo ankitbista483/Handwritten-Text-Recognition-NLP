@@ -7,32 +7,35 @@ class HandwritingDataLoader():
     def __init__(self):
         self.image = TensorTransform()
         self.label = LabelDictionary()
-        self.images = self.image.convert_to_tensor()  
-        self.labels = self.label.load_json_and_image()  
 
     def tensor_image(self):
-        return self.images  
+        return self.image.convert_to_tensor()   
     
     def dict_label(self):
-        return self.labels  
+        return self.label.load_json_and_image() 
     
     def __len__(self):
-        return len(self.images)  
+        return len(self.tensor_image())  
     
     def __getitem__(self, idx):
-        image_tensor = self.images[idx]
-        image_filename = list(self.labels.keys())[idx]  
-        label_dict = self.labels[image_filename]  
+        image_tensor = self.tensor_image()[idx]
+        image_filename = list(self.dict_label().keys())[idx]  
+        label_dict = self.dict_label()[image_filename]  
         
         return image_tensor, label_dict
 
+import torch
+from torch.utils.data import DataLoader
+
+# Instantiate the HandwritingDataLoader
 dataset = HandwritingDataLoader()
-image_tensor, label_dict = dataset[0]
-print(image_tensor)  
-print(label_dict) 
 
-        
+# Create a DataLoader to handle batching and shuffling
+dataloader = DataLoader(dataset, batch_size=4, shuffle=True)
 
-
-
-        
+# Loop through the data in batches
+for batch_idx, (image_tensor, label_dict) in enumerate(dataloader):
+    # Process the image tensor and label dictionary here
+    print(f"Batch {batch_idx + 1}:")
+    print("Image Tensor:", image_tensor)
+    print("Label Dictionary:", label_dict)

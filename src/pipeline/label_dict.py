@@ -16,14 +16,25 @@ class LabelDictionary:
     
     def load_json_and_image(self):
         file_paths = self.load_processed_json()  
+        # print("File paths:", file_paths) 
         result = {}
+
         for file in file_paths:
             with open(file, 'r') as json_file:
-                    data = json.load(json_file)
-        
-        base_name = os.path.splitext(os.path.basename(file))[0]
-        image_path = base_name + ".jpg"
-        result[os.path.basename(image_path)] = data
+                data = json.load(json_file)
+
+            base_name = os.path.splitext(os.path.basename(file))[0]
+            image_path = base_name + ".jpg"  # Create image path
+            
+            result[os.path.basename(image_path)] = data
+
+        #print("Loaded Labels Dictionary:")
+        print(result)
+
+        return result
+
         
 
-
+# Example usage
+try_label = LabelDictionary()
+try_label.load_json_and_image()  # This should print the result dictionary
