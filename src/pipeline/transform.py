@@ -19,10 +19,3 @@ class TensorTransform:
 
 
 
-import torch
-
-
-tensor_try = TensorTransform()
-tensor_try = tensor_try.convert_to_tensor()
-all_tensors = all(isinstance(img, torch.Tensor) for img in tensor_try)
-print(f"All elements are PyTorch tensors: {all_tensors}")
