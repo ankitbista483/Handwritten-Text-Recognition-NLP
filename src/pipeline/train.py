@@ -24,18 +24,14 @@ class HandwritingDataLoader():
         
         return image_tensor, label_dict
 
-import torch
-from torch.utils.data import DataLoader
 
-# Instantiate the HandwritingDataLoader
 dataset = HandwritingDataLoader()
+tensor= dataset.__len__()
+print(tensor)
 
-# Create a DataLoader to handle batching and shuffling
-dataloader = DataLoader(dataset, batch_size=4, shuffle=True)
 
-# Loop through the data in batches
-for batch_idx, (image_tensor, label_dict) in enumerate(dataloader):
-    # Process the image tensor and label dictionary here
-    print(f"Batch {batch_idx + 1}:")
-    print("Image Tensor:", image_tensor)
-    print("Label Dictionary:", label_dict)
+
+
+max_value = 571
+
+

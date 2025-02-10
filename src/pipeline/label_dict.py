@@ -29,12 +29,10 @@ class LabelDictionary:
             result[os.path.basename(image_path)] = data
 
         #print("Loaded Labels Dictionary:")
-        print(result)
+        #print(result)
 
         return result
 
         
 
-# Example usage
-try_label = LabelDictionary()
-try_label.load_json_and_image()  # This should print the result dictionary
+

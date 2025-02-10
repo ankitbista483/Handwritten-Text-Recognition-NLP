@@ -12,6 +12,6 @@ pillow
 torchmetrics
 lightning
 python-Levenshtein
-
+transformers
 
 -e .
