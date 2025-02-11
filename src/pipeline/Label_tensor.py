@@ -1,6 +1,5 @@
 import torch
-import re
-import torch.nn as nn
+import csv
 from src.pipeline.label_dict import LabelDictionary
 
 class LabelTensor:
@@ -76,12 +75,27 @@ class LabelTensor:
             for image_name, bounding_boxes in data.items()
         }
 
+            # Prepare data for CSV writing
+        csv_data = []
+        for image_name, tensor in tensor_data.items():
+            # Convert the tensor into a flat list of values
+            flattened_values = tensor.tolist()
+            # Append image_name to the beginning of the row
+            row = [image_name] + flattened_values
+            csv_data.append(row)
+
+        # Define the header for CSV (image_name + the 8 coordinates of the bounding box)
+        header = ['image_name', 'x0', 'y0', 'x1', 'y1', 'x2', 'y2', 'x3', 'y3']
+
+        # Write the data to a CSV file
+        with open('bounding_boxes.csv', 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(header)  # Write the header
+            writer.writerows(csv_data)  # Write the rows
+
         return tensor_data
 
-    def embedding_tensor(self):
-        vocab_size = len(self.create_ascii())
-        embedding_dim = 100
-        embedding = nn.Embedding(vocab_size, embedding_dim)
+    def text_tensor(self):
         words = self.embedding_label()
         data ={
             image_name:[
@@ -98,7 +112,31 @@ class LabelTensor:
             for image_name, word_list in data.items()
         }
         
+            # Save the tensor data to a CSV file
+        with open('tensor_data.csv', 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            
+            # Write header
+            writer.writerow(['image_name', 'tensor_data'])
+            
+            # Write the rows
+            for image_name, tensor in tensor_data.items():
+                # Convert tensor to a list and write to CSV
+                writer.writerow([image_name, tensor.tolist()])
+
         return tensor_data
 
+    def text_polygon_tensor(self):
+        text = self.text_tensor()
+        bbox = self.polygon_tensor()
 
+        concatenated_dict = {
+            key: torch.cat((text[key], bbox[key].unsqueeze(0)), dim=0)  
+            for key in text.keys()  #
+        }
+
+        return concatenated_dict
     
+
+j = LabelTensor()
+j = j.text_tensor()

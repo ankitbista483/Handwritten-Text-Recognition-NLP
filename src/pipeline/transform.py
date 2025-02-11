@@ -1,5 +1,6 @@
 from torchvision import transforms
 from src.component.data_cleaning import DataCleaner
+import numpy as np
 
 class TensorTransform:
     def __init__(self):
@@ -18,7 +19,13 @@ class TensorTransform:
         # for i, tensor in enumerate(img_tensors):
         #     print(f"Tensor {i} size: {tensor.size()}")  # or tensor.shape()
         
-        return img_tensors
+        return img
+
+  
 
 
 
+
+j = TensorTransform()
+j = j.convert_to_tensor()
+print(j)
