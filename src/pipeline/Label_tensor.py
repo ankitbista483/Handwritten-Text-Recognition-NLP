@@ -1,4 +1,5 @@
 import torch
+import re
 import torch.nn as nn
 from src.pipeline.label_dict import LabelDictionary
 
@@ -9,18 +10,25 @@ class LabelTensor:
         self.label_dict = []
 
     def create_ascii(self):
+   
         ascii_value_lower = [i for i in range(ord('a'), ord('z') + 1)]
         ascii_value_upper = [i for i in range(ord('A'), ord('Z') + 1)]
+        ascii_value_digits = [i for i in range(ord('0'), ord('9') + 1)]
 
         lowercase = [chr(i) for i in ascii_value_lower]
         uppercase = [chr(i) for i in ascii_value_upper]
+        digits = [chr(i) for i in ascii_value_digits]
 
+    
         ascii_lower_dict = dict(zip(lowercase, ascii_value_lower))
         ascii_upper_dict = dict(zip(uppercase, ascii_value_upper))
+        ascii_digits_dict = dict(zip(digits, ascii_value_digits))
 
-        self.vocab= {**ascii_upper_dict, **ascii_lower_dict}
+       
+        self.vocab = {**ascii_upper_dict, **ascii_lower_dict, **ascii_digits_dict}
 
         return self.vocab
+
     
 
     def load_label(self):
@@ -33,85 +41,64 @@ class LabelTensor:
     
 
     def extract_image_labels(self):
-        image_data_dict = self.load_label()
-        result = []
-        
+        image_data_dict = self.load_label()  
+        result = {}
         for image_name, data_entries in image_data_dict.items():
             cleaned_text_labels = [entry['cleaned_text_label'] for entry in data_entries]
-            polygon = [entry['polygon'] for entry in data_entries]
-            combined_labels_and_polygons = [
-            f"{label}: {polygon}" for label, polygon in zip(cleaned_text_labels, polygon)]
-            labels_string = ', '.join(combined_labels_and_polygons)
-            result.append(f"{image_name}[{labels_string}]")
+            result[image_name] = cleaned_text_labels 
+        return result
+
+    def extract_polygon(self):
+        image_data_dict = self.load_label()  
+        result = {}
+        for image_name, data_entries in image_data_dict.items():
+            cleaned_text_labels = [entry['polygon'] for entry in data_entries]
+            result[image_name] = cleaned_text_labels 
+        return result
+
+    
+    def embedding_label(self):
+        texts = self.extract_image_labels() 
+        vocab = self.create_ascii()  
+        encoded_data = {
+            image_name: [[vocab.get(char, 0) for char in word] for word in words]
+            for image_name, words in texts.items()
+        }
+     
+        return encoded_data
+
+    def polygon_tensor(self):
+        data = self.extract_polygon()  
         
-        return result
-    
-    def embedding_label(self):
-        texts = self.extract_image_labels()
-        vocab = self.create_ascii()
-        result = []
+       
+        tensor_data = {
+            image_name: torch.tensor([box[key] for box in bounding_boxes for key in ['x0', 'y0', 'x1', 'y1', 'x2', 'y2', 'x3', 'y3']], dtype=torch.float32)
+            for image_name, bounding_boxes in data.items()
+        }
 
-        for text in texts:
-            label_string = text.split('[')[1].split(']')[0]
-            label_string = label_string.split(', ')
-            label_embed = [vocab.get(char,0) for char in text]
-            image_name = text.split('[')[0]
-            result.append({image_name: label_embed})
-        return texts
+        return tensor_data
 
-    def embedding_label(self):
-        texts = self.extract_image_labels()  # Extract the list of texts
-        vocab = self.create_ascii()  # Create the vocabulary for embedding
-        result = []
-
-        for text in texts:
-            # Split the text to extract the image name and bounding box labels
-            parts = text.split('[:')
-            if len(parts) < 2:
-                continue  # Skip if the format is incorrect
-            
-            image_name = parts[0].strip()  # Image name (before [:)
-            label_data = parts[1].strip().rstrip(']')  # Extract label data (between [: and ]])
-
-            # Now split the label_data into individual word-label pairs
-            label_entries = label_data.split(',')  # Split by commas to separate words and coordinates
-            
-            labels = []
-            for entry in label_entries:
-                # Extract the word and coordinates
-                parts = entry.split(': {')
-                if len(parts) < 2:
-                    continue  # Skip if the entry format is incorrect
+    def embedding_tensor(self):
+        vocab_size = len(self.create_ascii())
+        embedding_dim = 100
+        embedding = nn.Embedding(vocab_size, embedding_dim)
+        words = self.embedding_label()
+        data ={
+            image_name:[
                 
-                word = parts[0].strip()  # Extract word
-                coordinates = parts[1].strip().rstrip('}')  # Extract coordinates part, removing closing }
+                word + [0] * (39 - len(word)) if len(word) < 39 else word if word else [0] * 39
+                for word in value
+            ]
+            for image_name, value in words.items()
+            
+        }
 
-                # You can process coordinates further if needed
-                coord_dict = {}
-                for coord in coordinates.split(','):
-                    key, value = coord.split(':')
-                    coord_dict[key.strip()] = int(value.strip())
-                
-                # Embed the word using the vocabulary
-                label_embed = [vocab.get(word, 0)]  # Using the vocabulary to embed the word
-
-                # Append the processed data to the result
-                labels.append({
-                    'word': word,
-                    'coordinates': coord_dict,
-                    'embedding': label_embed
-                })
-
-            # Append the image name and its labels with embeddings
-            result.append({
-                'image_name': image_name,
-                'labels': labels
-            })
-
-        return result
+        tensor_data = {
+            image_name: torch.tensor([word for word in word_list], dtype=torch.long)
+            for image_name, word_list in data.items()
+        }
+        
+        return tensor_data
 
 
     
-jpt = LabelTensor()
-texts = jpt.embedding_label()
-print(texts[0])
